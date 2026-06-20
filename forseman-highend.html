@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forseman Construction LLC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:    #141414;
+      --charcoal: #1E1E1E;
+      --copper:   #C4732A;
+      --concrete: #C8BFB0;
+      --offwhite: #F0EDE8;
+      --grey:     #888078;
+      --midgrey:  #3A3A3A;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--offwhite);
+      overflow-x: hidden;
+    }
+
+    /* ── CURSOR DOT ── */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--copper);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.25s, height 0.25s, background 0.25s;
+    }
+    .cursor.grow { width: 36px; height: 36px; background: transparent; border: 1.5px solid var(--copper); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 3rem;
+      mix-blend-mode: normal;
+      transition: background 0.4s, padding 0.4s, backdrop-filter 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(20,20,20,0.92);
+      backdrop-filter: blur(12px);
+      padding: 1rem 3rem;
+      border-bottom: 1px solid rgba(196,115,42,0.2);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.12em;
+      color: var(--offwhite);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--copper); }
+    .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--concrete);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--offwhite); }
+    .nav-cta {
+      background: var(--copper);
+      color: var(--black) !important;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500 !important;
+    }
+    .nav-cta:hover { background: #d4832f; color: var(--black) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background: var(--black);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      padding: 0 3rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg-text {
+      position: absolute;
+      top: 50%;
+      left: -0.05em;
+      transform: translateY(-50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(14rem, 22vw, 24rem);
+      color: rgba(255,255,255,0.025);
+      line-height: 0.85;
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .hero-left {
+      position: relative;
+      z-index: 2;
+      padding-top: 10rem;
+    }
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero-tag::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 1px;
+      background: var(--copper);
+      animation: lineGrow 1.2s cubic-bezier(0.77,0,0.175,1) 0.3s forwards;
+    }
+    @keyframes lineGrow {
+      to { width: 48px; }
+    }
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4.5rem, 10vw, 9rem);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--offwhite);
+      margin-bottom: 0;
+    }
+    .hero h1 .copper-line {
+      color: var(--copper);
+      display: block;
+      position: relative;
+    }
+    .hero h1 .copper-line::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      height: 3px;
+      background: var(--copper);
+      width: 0;
+      animation: underlineGrow 1s cubic-bezier(0.77,0,0.175,1) 0.8s forwards;
+    }
+    @keyframes underlineGrow { to { width: 100%; } }
+    .hero-weld {
+      margin-top: 2.5rem;
+      width: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--copper), rgba(196,115,42,0.2));
+      animation: weldLine 1.8s cubic-bezier(0.77,0,0.175,1) 0.5s forwards;
+    }
+    @keyframes weldLine { to { width: min(480px, 80vw); } }
+    .hero-sub {
+      margin-top: 2rem;
+      max-width: 400px;
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--concrete);
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.2s forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-actions {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1.5s forwards;
+    }
+    .btn-copper {
+      background: var(--copper);
+      color: var(--black);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-copper:hover { background: #d4832f; transform: translateY(-2px); }
+    .btn-ghost {
+      border: 1px solid rgba(200,191,176,0.35);
+      color: var(--concrete);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--offwhite); color: var(--offwhite); transform: translateY(-2px); }
+
+    .hero-right {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding-bottom: 0.5rem;
+      gap: 2rem;
+    }
+    .hero-stat-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 1.5rem;
+    }
+    .hero-stat {
+      text-align: right;
+      border-right: 2px solid var(--copper);
+      padding-right: 1.5rem;
+      opacity: 0;
+    }
+    .hero-stat:nth-child(1) { animation: fadeUp 0.7s ease 1.6s forwards; }
+    .hero-stat:nth-child(2) { animation: fadeUp 0.7s ease 1.8s forwards; }
+    .hero-stat:nth-child(3) { animation: fadeUp 0.7s ease 2.0s forwards; }
+    .hero-stat .num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      color: var(--offwhite);
+      line-height: 1;
+    }
+    .hero-stat .lbl {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 0.2rem;
+    }
+    .scroll-hint {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--grey);
+      opacity: 0;
+      animation: fadeUp 0.7s ease 2.2s forwards;
+    }
+    .scroll-hint::before {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, var(--grey));
+      animation: scrollBar 2s ease 2.5s infinite;
+    }
+    @keyframes scrollBar {
+      0%,100% { opacity: 0.3; } 50% { opacity: 1; }
+    }
+
+    /* ── MANIFESTO BAND ── */
+    .manifesto-band {
+      background: var(--copper);
+      padding: 1.5rem 3rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .manifesto-ticker {
+      display: flex;
+      gap: 4rem;
+      white-space: nowrap;
+      animation: ticker 22s linear infinite;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .manifesto-ticker span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      color: var(--black);
+    }
+    .manifesto-ticker .dot {
+      color: rgba(0,0,0,0.35);
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      background: var(--offwhite);
+      color: var(--black);
+      padding: 8rem 3rem;
+    }
+    .about-inner { max-width: 1100px; margin: 0 auto; }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+    .eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 1.5rem;
+    }
+    .section-h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      margin-bottom: 2rem;
+    }
+    .about-body p {
+      font-size: 1.02rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: #3A3530;
+      margin-bottom: 1.25rem;
+    }
+    .signature-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      color: var(--copper);
+      margin-top: 2rem;
+    }
+    .signature-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    .about-right { padding-top: 5.5rem; }
+    .about-callout {
+      background: var(--black);
+      color: var(--offwhite);
+      padding: 3rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .about-callout::before {
+      content: '"';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 8rem;
+      color: var(--copper);
+      opacity: 0.25;
+      position: absolute;
+      top: -1rem;
+      left: 1.5rem;
+      line-height: 1;
+    }
+    .about-callout p {
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--concrete);
+      position: relative;
+      z-index: 1;
+    }
+    .about-callout .attribution {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-top: 1.25rem;
+      position: relative;
+      z-index: 1;
+    }
+    .about-grid-mini {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(0,0,0,0.12);
+    }
+    .mini-stat {
+      background: var(--offwhite);
+      padding: 1.5rem;
+    }
+    .mini-stat .n {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      color: var(--black);
+      line-height: 1;
+    }
+    .mini-stat .l {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-top: 0.3rem;
+    }
+
+    /* ── SERVICES ── */
+    #services {
+      background: var(--black);
+      padding: 8rem 3rem;
+    }
+    .services-inner { max-width: 1100px; margin: 0 auto; }
+    .services-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 4rem;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .services-header .section-h2 { color: var(--offwhite); margin-bottom: 0; }
+    .services-header p {
+      max-width: 320px;
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--grey);
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--midgrey);
+    }
+    .service-tile {
+      background: var(--charcoal);
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+      cursor: default;
+    }
+    .service-tile::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px; width: 0;
+      background: var(--copper);
+      transition: width 0.4s cubic-bezier(0.77,0,0.175,1);
+    }
+    .service-tile:hover::after { width: 100%; }
+    .service-tile:hover { background: #222; }
+    .service-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      color: rgba(196,115,42,0.15);
+      line-height: 1;
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      transition: color 0.3s;
+    }
+    .service-tile:hover .service-num { color: rgba(196,115,42,0.3); }
+    .service-icon {
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .service-tile h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
+      color: var(--offwhite);
+      margin-bottom: 1rem;
+    }
+    .service-tile p {
+      font-size: 0.92rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--grey);
+    }
+
+    /* ── REVIEWS ── */
+    #reviews {
+      background: var(--offwhite);
+      color: var(--black);
+      padding: 8rem 3rem;
+    }
+    .reviews-inner { max-width: 1100px; margin: 0 auto; }
+    .reviews-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 5rem;
+      align-items: end;
+    }
+    .rating-display {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .rating-big {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 7rem;
+      color: var(--black);
+      line-height: 0.9;
+    }
+    .rating-meta { padding-bottom: 0.5rem; }
+    .stars-row {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .star-full { color: var(--copper); font-size: 1.1rem; }
+    .star-half { color: var(--copper); font-size: 1.1rem; opacity: 0.45; }
+    .rating-source {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+    .reviews-right p {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: #5A5550;
+    }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .review-card {
+      background: var(--black);
+      color: var(--offwhite);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .review-stars { display: flex; gap: 3px; }
+    .review-stars span { color: var(--copper); font-size: 0.9rem; }
+    .review-text {
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--concrete);
+      flex: 1;
+    }
+    .review-byline {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--copper);
+    }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--charcoal);
+      padding: 8rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: 'CONTACT';
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(8rem, 18vw, 18rem);
+      color: rgba(255,255,255,0.02);
+      right: -0.05em;
+      bottom: -0.15em;
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+    }
+    .contact-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+      margin-top: 4rem;
+    }
+    .contact-details { display: flex; flex-direction: column; gap: 2.5rem; }
+    .c-item {}
+    .c-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 0.5rem;
+    }
+    .c-value {
+      font-size: 1.15rem;
+      font-weight: 300;
+      color: var(--offwhite);
+      line-height: 1.5;
+    }
+    .c-value a { color: var(--offwhite); text-decoration: none; transition: color 0.2s; }
+    .c-value a:hover { color: var(--copper); }
+
+    .hours-table { width: 100%; border-collapse: collapse; }
+    .hours-table tr {
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .hours-table tr.today-row td { color: var(--offwhite); }
+    .hours-table td {
+      padding: 0.75rem 0;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--grey);
+    }
+    .hours-table td:first-child {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .hours-table td:last-child { text-align: right; }
+    .hours-table .today-marker {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--copper);
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+      margin-bottom: 2px;
+    }
+
+    .map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--copper);
+      text-decoration: none;
+      margin-top: 1rem;
+      transition: gap 0.2s;
+    }
+    .map-link:hover { gap: 1.1rem; }
+    .map-link::after { content: '→'; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-top: 1px solid rgba(196,115,42,0.2);
+    }
+    footer .f-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--offwhite);
+    }
+    footer .f-logo span { color: var(--copper); }
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--grey);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      nav.scrolled { padding: 0.8rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 0 1.5rem 4rem; }
+      .hero-right { display: none; }
+      #about, #services, #reviews, #contact { padding: 5rem 1.5rem; }
+      .about-grid, .reviews-header, .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-right { padding-top: 0; }
+      .services-grid { grid-template-columns: 1fr; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      footer { padding: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAV -->
+  <nav id="mainNav">
+    <a href="#" class="nav-logo">Forseman <span>Construction</span></a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#reviews">Reviews</a>
+      <a href="tel:+12182242275" class="nav-cta">Call Us</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-bg-text">BUILD</div>
+
+    <div class="hero-left">
+      <p class="hero-tag">Laporte, Minnesota · Est. Local</p>
+      <h1>
+        Forseman<br>
+        <span class="copper-line">Construction</span>
+      </h1>
+      <div class="hero-weld"></div>
+      <p class="hero-sub">Steel buildings, pole barns, and custom structures built by a contractor who answers the phone — and answers for the work, years after the job is done.</p>
+      <div class="hero-actions">
+        <a href="tel:+12182242275" class="btn-copper">(218) 224-2275</a>
+        <a href="#about" class="btn-ghost">Our Work</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-stat-stack">
+        <div class="hero-stat">
+          <div class="num">3.7★</div>
+          <div class="lbl">Google Rating</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">MN</div>
+          <div class="lbl">Licensed Contractor</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">6+</div>
+          <div class="lbl">Years Standing Behind Builds</div>
+        </div>
+      </div>
+      <div class="scroll-hint">Scroll</div>
+    </div>
+  </header>
+
+  <!-- MANIFESTO TICKER -->
+  <div class="manifesto-band" aria-hidden="true">
+    <div class="manifesto-ticker">
+      <span>Steel Structures</span><span class="dot">·</span>
+      <span>Pole Barns</span><span class="dot">·</span>
+      <span>Custom Builds</span><span class="dot">·</span>
+      <span>Roof &amp; Repair</span><span class="dot">·</span>
+      <span>Laporte, MN</span><span class="dot">·</span>
+      <span>Owner-Operated</span><span class="dot">·</span>
+      <span>Steel Structures</span><span class="dot">·</span>
+      <span>Pole Barns</span><span class="dot">·</span>
+      <span>Custom Builds</span><span class="dot">·</span>
+      <span>Roof &amp; Repair</span><span class="dot">·</span>
+      <span>Laporte, MN</span><span class="dot">·</span>
+      <span>Owner-Operated</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-inner">
+      <div class="about-grid">
+        <div class="about-body reveal">
+          <p class="eyebrow">Who We Are</p>
+          <h2 class="section-h2">Built Different.<br>By Design.</h2>
+          <p>Forseman Construction is a Laporte-based builder specializing in steel structures, pole barns, and purpose-built construction across northern Minnesota. Every project is led personally by Andy Forseman — not handed off to a crew you've never met.</p>
+          <p>When you hire Forseman, you get a contractor who picks up the phone six years later when there's a leak in the roof. Not because it's policy. Because that's how Andy operates.</p>
+          <p>Northern Minnesota demands buildings that survive real winters. We build them that way on purpose.</p>
+          <div class="signature-name">Andy Forseman</div>
+          <div class="signature-title">Owner & Builder</div>
+        </div>
+
+        <div class="about-right reveal">
+          <div class="about-callout">
+            <p>I had a small leak in the roof of my steel shed — about 6 years after Andy did the build. I sent him a text, and in less than 10 minutes on a Monday he was on it.</p>
+            <div class="attribution">— Google Review, 5 Stars</div>
+          </div>
+          <div class="about-grid-mini">
+            <div class="mini-stat">
+              <div class="n">MN</div>
+              <div class="l">Licensed</div>
+            </div>
+            <div class="mini-stat">
+              <div class="n">3.7★</div>
+              <div class="l">Google</div>
+            </div>
+            <div class="mini-stat">
+              <div class="n">100%</div>
+              <div class="l">Owner-Led</div>
+            </div>
+            <div class="mini-stat">
+              <div class="n">6+</div>
+              <div class="l">Yrs Aftercare</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-inner">
+      <div class="services-header reveal">
+        <div>
+          <p class="eyebrow" style="color:var(--copper)">What We Build</p>
+          <h2 class="section-h2">Services</h2>
+        </div>
+        <p>From ground-up steel structures to precision repairs on builds we finished years ago — we handle it all, start to finish.</p>
+      </div>
+
+      <div class="services-grid reveal">
+        <div class="service-tile">
+          <div class="service-num">01</div>
+          <div class="service-icon">🏗️</div>
+          <h3>Steel Buildings</h3>
+          <p>Custom steel structures engineered for northern Minnesota weather. Agricultural storage, commercial spaces, and personal shops built to outlast the decade.</p>
+        </div>
+        <div class="service-tile">
+          <div class="service-num">02</div>
+          <div class="service-icon">🏚️</div>
+          <h3>Pole Barns</h3>
+          <p>Post-frame construction done right. Machine sheds, horse barns, equipment storage — designed for the land and the work you actually do.</p>
+        </div>
+        <div class="service-tile">
+          <div class="service-num">03</div>
+          <div class="service-icon">🔧</div>
+          <h3>Repairs & Warranty Work</h3>
+          <p>We stand behind our builds — years after completion. If something isn't right, you reach Andy directly. No runaround, no call center.</p>
+        </div>
+        <div class="service-tile">
+          <div class="service-num">04</div>
+          <div class="service-icon">📐</div>
+          <h3>Custom Construction</h3>
+          <p>Have a unique layout, site condition, or use case? We'll design and build it with you — and make sure it works before we leave the job.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="reviews-inner">
+      <div class="reviews-header reveal">
+        <div>
+          <p class="eyebrow">Client Feedback</p>
+          <h2 class="section-h2">Reviews</h2>
+          <div class="rating-display">
+            <div class="rating-big">3.7</div>
+            <div class="rating-meta">
+              <div class="stars-row">
+                <span class="star-full">★</span>
+                <span class="star-full">★</span>
+                <span class="star-full">★</span>
+                <span class="star-full">★</span>
+                <span class="star-half">★</span>
+              </div>
+              <div class="rating-source">3 Google Reviews</div>
+            </div>
+          </div>
+        </div>
+        <div class="reviews-right">
+          <p>A small review count doesn't tell the full story. A contractor who responds in under 10 minutes six years after finishing a job — that's the reputation being built, review by review.</p>
+        </div>
+      </div>
+
+      <div class="reviews-grid reveal">
+        <div class="review-card">
+          <div class="review-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <p class="review-text">Had a small leak in the roof of my steel shed about 6 years after Andy completed the build. Sent a text Monday morning — heard back in under 10 minutes. That kind of follow-through is rare.</p>
+          <div class="review-byline">Google Reviewer · 5 Stars</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <p class="review-text">Thank you for your work!</p>
+          <div class="review-byline">Google Reviewer · 5 Stars</div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">
+            <span>★</span><span>★</span><span style="opacity:0.35">★</span><span style="opacity:0.35">★</span><span style="opacity:0.35">★</span>
+          </div>
+          <p class="review-text">Not the first time this has happened with this construction company… ☹️</p>
+          <div class="review-byline">Google Reviewer · 2 Stars</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-inner">
+      <p class="eyebrow reveal">Get In Touch</p>
+      <h2 class="section-h2 reveal" style="color:var(--offwhite)">Let's Build<br>Something.</h2>
+
+      <div class="contact-grid">
+        <div class="contact-details reveal">
+          <div class="c-item">
+            <div class="c-label">Phone</div>
+            <div class="c-value"><a href="tel:+12182242275">(218) 224-2275</a></div>
+          </div>
+          <div class="c-item">
+            <div class="c-label">Address</div>
+            <div class="c-value">40988 County 45<br>Laporte, MN 56461</div>
+            <a href="https://maps.google.com/?q=40988+County+45+Laporte+MN+56461" target="_blank" rel="noopener" class="map-link">Open in Maps</a>
+          </div>
+          <div class="c-item">
+            <div class="c-label">Service Area</div>
+            <div class="c-value">Hubbard County &amp; surrounding northern Minnesota communities</div>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="c-label" style="margin-bottom:1.25rem">Hours</div>
+          <table class="hours-table">
+            <tbody>
+              <tr><td>Monday</td><td>6:30 AM – 5:00 PM</td></tr>
+              <tr><td>Tuesday</td><td>6:30 AM – 5:00 PM</td></tr>
+              <tr><td>Wednesday</td><td>6:30 AM – 5:00 PM</td></tr>
+              <tr><td>Thursday</td><td>6:30 AM – 5:00 PM</td></tr>
+              <tr class="today-row"><td><span class="today-marker"></span>Friday</td><td>Opens 6:30 AM</td></tr>
+              <tr><td>Saturday</td><td>By Appointment</td></tr>
+              <tr><td>Sunday</td><td>Closed</td></tr>
+            </tbody>
+          </table>
+
+          <div style="margin-top:3rem">
+            <a href="tel:+12182242275" class="btn-copper" style="display:inline-block">Call (218) 224-2275</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="f-logo">Forseman <span>Construction</span> LLC</div>
+    <p>40988 County 45 · Laporte, MN 56461 · (218) 224-2275</p>
+    <p>© 2026 All rights reserved</p>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .service-tile').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+    });
+
+    // Nav scroll
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
